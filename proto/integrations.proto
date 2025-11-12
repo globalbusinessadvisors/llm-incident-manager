@@ -1,0 +1,191 @@
+syntax = "proto3";
+
+package integrations;
+
+import "google/protobuf/timestamp.proto";
+
+// Shield Security Service - Threat Analysis and Mitigation
+service ShieldService {
+    // Analyze security event for threats
+    rpc AnalyzeSecurityEvent(SecurityEventRequest) returns (ThreatAnalysisResponse);
+
+    // Assess overall risk level
+    rpc AssessRisk(RiskAssessmentRequest) returns (RiskAssessmentResponse);
+
+    // Generate mitigation plan
+    rpc GenerateMitigationPlan(MitigationRequest) returns (MitigationPlanResponse);
+
+    // Report security pattern
+    rpc ReportSecurityPattern(SecurityPatternRequest) returns (SecurityPatternResponse);
+}
+
+// Edge Agent Service - Local Inference with Bidirectional Streaming
+service EdgeAgentService {
+    // Bidirectional streaming for real-time inference
+    rpc StreamInference(stream InferenceRequest) returns (stream InferenceResponse);
+
+    // Submit batch for offline processing
+    rpc SubmitBatch(BatchRequest) returns (BatchResponse);
+
+    // Synchronize with hub
+    rpc SyncWithHub(SyncRequest) returns (SyncResponse);
+
+    // Get resource usage stats
+    rpc GetResourceUsage(ResourceUsageRequest) returns (ResourceUsageResponse);
+}
+
+// Shield Messages
+message SecurityEventRequest {
+    string event_id = 1;
+    string event_type = 2;
+    string source = 3;
+    string description = 4;
+    map<string, string> metadata = 5;
+    google.protobuf.Timestamp timestamp = 6;
+    string severity = 7;
+}
+
+message ThreatAnalysisResponse {
+    string analysis_id = 1;
+    string threat_type = 2;
+    double confidence_score = 3;
+    string severity_level = 4;
+    repeated string indicators = 5;
+    repeated string affected_systems = 6;
+    string description = 7;
+    map<string, string> details = 8;
+    google.protobuf.Timestamp analyzed_at = 9;
+}
+
+message RiskAssessmentRequest {
+    string context_id = 1;
+    repeated string event_ids = 2;
+    string assessment_type = 3;
+    map<string, string> parameters = 4;
+}
+
+message RiskAssessmentResponse {
+    string assessment_id = 1;
+    string risk_level = 2; // LOW, MEDIUM, HIGH, CRITICAL
+    double risk_score = 3;
+    repeated RiskFactor risk_factors = 4;
+    repeated string recommendations = 5;
+    google.protobuf.Timestamp assessed_at = 6;
+}
+
+message RiskFactor {
+    string factor_type = 1;
+    string description = 2;
+    double impact_score = 3;
+    double likelihood = 4;
+}
+
+message MitigationRequest {
+    string threat_id = 1;
+    string threat_type = 2;
+    string severity = 3;
+    repeated string affected_systems = 4;
+    map<string, string> context = 5;
+}
+
+message MitigationPlanResponse {
+    string plan_id = 1;
+    repeated MitigationStep steps = 2;
+    int32 estimated_duration_minutes = 3;
+    string priority = 4;
+    repeated string required_resources = 5;
+    google.protobuf.Timestamp created_at = 6;
+}
+
+message MitigationStep {
+    int32 order = 1;
+    string action = 2;
+    string description = 3;
+    string automation_available = 4;
+    repeated string dependencies = 5;
+}
+
+message SecurityPatternRequest {
+    string pattern_type = 1;
+    repeated string event_ids = 2;
+    string description = 3;
+    map<string, string> attributes = 4;
+}
+
+message SecurityPatternResponse {
+    string pattern_id = 1;
+    bool is_known_pattern = 2;
+    string pattern_name = 3;
+    double confidence = 4;
+    repeated string similar_patterns = 5;
+    string recommendation = 6;
+}
+
+// Edge Agent Messages
+message InferenceRequest {
+    string request_id = 1;
+    string model_id = 2;
+    string input_data = 3;
+    map<string, string> parameters = 4;
+    int32 priority = 5;
+    bool allow_offline_queue = 6;
+    google.protobuf.Timestamp timestamp = 7;
+}
+
+message InferenceResponse {
+    string request_id = 1;
+    string result = 2;
+    double confidence = 3;
+    string status = 4; // COMPLETED, QUEUED, FAILED
+    map<string, string> metadata = 5;
+    ResourceSnapshot resource_usage = 6;
+    google.protobuf.Timestamp processed_at = 7;
+}
+
+message BatchRequest {
+    string batch_id = 1;
+    repeated InferenceRequest requests = 2;
+    int32 priority = 3;
+    google.protobuf.Timestamp deadline = 4;
+}
+
+message BatchResponse {
+    string batch_id = 1;
+    string status = 2;
+    int32 total_requests = 3;
+    int32 queued_requests = 4;
+    google.protobuf.Timestamp estimated_completion = 5;
+}
+
+message SyncRequest {
+    string agent_id = 1;
+    repeated string pending_request_ids = 2;
+    google.protobuf.Timestamp last_sync = 3;
+}
+
+message SyncResponse {
+    string sync_id = 1;
+    repeated string synced_requests = 2;
+    repeated string failed_requests = 3;
+    google.protobuf.Timestamp sync_timestamp = 4;
+}
+
+message ResourceUsageRequest {
+    string agent_id = 1;
+}
+
+message ResourceUsageResponse {
+    string agent_id = 1;
+    ResourceSnapshot current_usage = 2;
+    repeated ResourceSnapshot history = 3;
+}
+
+message ResourceSnapshot {
+    double cpu_percent = 1;
+    double memory_mb = 2;
+    double gpu_percent = 3;
+    double disk_io_mb_per_sec = 4;
+    int32 active_requests = 5;
+    int32 queued_requests = 6;
+    google.protobuf.Timestamp timestamp = 7;
+}

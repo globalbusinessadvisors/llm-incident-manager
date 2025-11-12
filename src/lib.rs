@@ -5,6 +5,7 @@ pub mod enrichment;
 pub mod error;
 pub mod escalation;
 pub mod grpc;
+pub mod integrations;
 pub mod ml;
 pub mod models;
 pub mod notifications;
